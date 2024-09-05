@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/auth/login")
-class LoginController : BaseController() {
+class LoginController : BaseController(LoginController::class.java.toString()) {
 
     @PostMapping
     fun doLogin( @RequestBody dto:LoginRequestDto): ResponseEntity<Any> {

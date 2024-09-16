@@ -1,5 +1,7 @@
 package br.com.devaria.Devameet.SDSirius.Devameet_Kotlin.entities
 
+import com.fasterxml.jackson.annotation.JsonBackReference
+import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.Entity
 import jakarta.persistence.*
 
@@ -10,6 +12,12 @@ data class User (
     val id : Long = 0,
     val email: String = "",
     var name: String = "",
+    @JsonIgnore
     var password: String = "",
-    var avatar : String = ""
+    var avatar : String = "",
+
+    @JsonBackReference
+    @OneToMany(mappedBy = "user")
+    val meets: List<Meet> = emptyList()
+
 )

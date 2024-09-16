@@ -1,5 +1,6 @@
 package br.com.devaria.Devameet.SDSirius.Devameet_Kotlin.entities
 
+import jakarta.persistence.Entity
 import jakarta.persistence.*
 
 @Entity

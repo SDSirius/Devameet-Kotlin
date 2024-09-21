@@ -60,7 +60,6 @@ class SecurityConfiguration {
         try {
             return http.getSharedObject(AuthenticationManager::class.java)
         }catch (e:Exception){
-            println(http.getSharedObject(AuthenticationManager::class.java))
             println(e)
             return http.getSharedObject(AuthenticationManager::class.java)
         }

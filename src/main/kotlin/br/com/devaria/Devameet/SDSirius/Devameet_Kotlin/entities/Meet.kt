@@ -2,22 +2,28 @@ package br.com.devaria.Devameet.SDSirius.Devameet_Kotlin.entities
 
 import com.fasterxml.jackson.annotation.JsonBackReference
 import jakarta.persistence.*
+import jakarta.persistence.Id
 
+
+@Entity
 data class Meet(
     @Id
-    @GeneratedValue(strategy = GenerationType. IDENTITY)
-    val id: Long = 0,
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val id:Long = 0,
     var name: String = "",
-    var color:String= "",
-    val link:String= "",
+    val link: String = "",
+    var color: String = "",
 
     @JsonBackReference
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "userId")
-    val user:User? = null,
+    val user: User? = null,
 
     @JsonBackReference
-    @OneToMany(mappedBy = "objects")
-    var objects: List<MeetObject> = emptyList()
-) {
-}
+    @OneToMany(mappedBy = "meet")
+    val objects: List<MeetObject> = emptyList(),
+
+    @JsonBackReference
+    @OneToMany(mappedBy = "meetPosition")
+    val positions : List<Position> = emptyList()
+)

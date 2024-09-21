@@ -22,6 +22,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web:3.3.3")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa:3.3.3")
 	implementation("org.springframework.boot:spring-boot-starter-security:3.3.3")
+	implementation("com.corundumstudio.socketio:netty-socketio:2.0.11")
 	implementation("io.jsonwebtoken:jjwt-api:0.11.5")
 	implementation("io.jsonwebtoken:jjwt-impl:0.11.5")
 	implementation("io.jsonwebtoken:jjwt-jackson:0.11.5")
@@ -43,3 +44,4 @@ kotlin {
 tasks.withType<Test> {
 	useJUnitPlatform()
 }
+

@@ -4,7 +4,6 @@ import br.com.devaria.Devameet.SDSirius.Devameet_Kotlin.dtos.meet.MeetObjectRequ
 import br.com.devaria.Devameet.SDSirius.Devameet_Kotlin.dtos.room.GetRoomResponseDto
 import br.com.devaria.Devameet.SDSirius.Devameet_Kotlin.dtos.room.UpdatePositionRequestDto
 import br.com.devaria.Devameet.SDSirius.Devameet_Kotlin.dtos.room.UpdateUserSocketResponseDto
-import br.com.devaria.Devameet.SDSirius.Devameet_Kotlin.dtos.room.UpdateUsersSocketResponseDto
 import br.com.devaria.Devameet.SDSirius.Devameet_Kotlin.entities.Position
 import br.com.devaria.Devameet.SDSirius.Devameet_Kotlin.exceptions.BadRequestException
 import br.com.devaria.Devameet.SDSirius.Devameet_Kotlin.repositories.MeetObjectRepository
@@ -98,7 +97,6 @@ class RoomService(
             if(usersInRoom != null && usersInRoom.size > 20){
                 throw BadRequestException(mutableListOf("Reunião excedeu a quantidade de participantes"))
             }
-
             loggedUserInRoom = Position(
                 clientId = dto.clientId,
                 userPosition = user,
@@ -110,29 +108,18 @@ class RoomService(
                 orientation = "down",
             )
         }else{
-            val messages = mutableListOf<String>()
-
-            if (dto.x < 0 || dto.x >8){
-                messages.add("Eixo X Inválido!")
+            if (dto.x in 1..7){
+                loggedUserInRoom.x = dto.x
             }
 
-            if (dto.y < 0 || dto.y >8){
-                messages.add("Eixo Y Inválido!")
+            if (dto.y in 1..7){
+                loggedUserInRoom.y = dto.y
             }
 
-            if (dto.orientation.isNullOrEmpty() || dto.orientation.isBlank()){
-                messages.add("Orientação Inválida!")
+            if (dto.orientation.isNotEmpty() && !dto.orientation.isNullOrBlank()){
+                loggedUserInRoom.orientation = dto.orientation
             }
-
-            if(messages.size > 0){
-                throw BadRequestException(messages)
-            }
-
-            loggedUserInRoom.x = dto.x
-            loggedUserInRoom.y = dto.y
-            loggedUserInRoom.orientation = dto.orientation
         }
-
         positionsRepository.save(loggedUserInRoom)
         return loggedUserInRoom
     }

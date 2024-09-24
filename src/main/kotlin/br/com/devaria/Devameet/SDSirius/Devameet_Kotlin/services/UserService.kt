@@ -15,7 +15,7 @@ import kotlin.jvm.Throws
 
 @Service
 class UserService(
-    @Value("\${devameet.secrets.aes-secrets}")
+    @Value("\${devameet.secrets.jwt-secret}")
     private val secret: String,
     private val userRepository: UserRepository
 ) {

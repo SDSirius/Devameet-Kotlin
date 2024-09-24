@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
 import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer
@@ -29,16 +30,18 @@ class SecurityConfiguration {
     private lateinit var userRepository: UserRepository
 
     @Bean
-    fun configureHttpSecurity(http: HttpSecurity): SecurityFilterChain {
-        http.csrf { it.disable() }
-            .authorizeHttpRequests { authz: AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry ->
-                authz
-                    .requestMatchers(HttpMethod.POST, "/auth/*").permitAll()
-                    .anyRequest().authenticated()
+    fun authenticationManager(authConfig: AuthenticationConfiguration): AuthenticationManager {
+        return authConfig.authenticationManager
+    }
+
+    @Bean
+    fun configureHttpSecurity(http: HttpSecurity, authenticationManager: AuthenticationManager): SecurityFilterChain {
+        println("configureHttpSecurity INICIADO  ->> OK ")
+        http.csrf{ it.disable() }.authorizeHttpRequests {
+            authz: AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry ->
+            authz.requestMatchers(HttpMethod.POST, "/auth/*").permitAll().anyRequest().authenticated()
             }
-            .cors { it.configurationSource(configureCors()) }
-            .addFilter(JWTAuthorizerFilter(authenticationManager(http), jwtUtils, userRepository))
-            .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
+        .cors { it.configurationSource(configureCors()) }.addFilter(JWTAuthorizerFilter(authenticationManager, jwtUtils, userRepository)).sessionManagement{ it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
 
         return http.build()
     }
@@ -46,22 +49,14 @@ class SecurityConfiguration {
     @Bean
     fun configureCors(): CorsConfigurationSource? {
         val configuration = CorsConfiguration()
+        println("Chegou no configurecors!! ")
         configuration.addAllowedOriginPattern("*")
         configuration.addAllowedMethod("*")
         configuration.addAllowedHeader("*")
 
         val source = UrlBasedCorsConfigurationSource()
         source.registerCorsConfiguration("/**", configuration)
+        println("Finalizou o configureCors")
         return source
-    }
-
-    @Bean
-    fun authenticationManager(http: HttpSecurity): AuthenticationManager {
-        try {
-            return http.getSharedObject(AuthenticationManager::class.java)
-        }catch (e:Exception){
-            println(e)
-            return http.getSharedObject(AuthenticationManager::class.java)
-        }
     }
 }

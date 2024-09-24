@@ -1,11 +1,9 @@
 package br.com.devaria.Devameet.SDSirius.Devameet_Kotlin.controllers
 
-import br.com.devaria.Devameet.SDSirius.Devameet_Kotlin.dtos.UserUpdateRequestDto
 import br.com.devaria.Devameet.SDSirius.Devameet_Kotlin.dtos.meet.MeetCreateRequestDto
 import br.com.devaria.Devameet.SDSirius.Devameet_Kotlin.dtos.meet.MeetUpdateRequestDto
 import br.com.devaria.Devameet.SDSirius.Devameet_Kotlin.exceptions.BadRequestException
 import br.com.devaria.Devameet.SDSirius.Devameet_Kotlin.services.MeetService
-import br.com.devaria.Devameet.SDSirius.Devameet_Kotlin.services.UserService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping

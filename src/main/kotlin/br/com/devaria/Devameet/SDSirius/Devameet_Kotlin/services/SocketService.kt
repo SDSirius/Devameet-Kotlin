@@ -64,6 +64,7 @@ class SocketService(
             val position = roomService.findByClientId(client.sessionId.toString())
 
             var result : Position? =null
+            val users = roomService.listAllPositions(data.link)
 
             if (position == null){
                 data.clientId = client.sessionId.toString()
@@ -80,7 +81,7 @@ class SocketService(
                     sendToOtherClients("${data.link}-add-user", client, JoinRoomSocketResponseDto(client.sessionId.toString()))
                 }
             }
-            val users = roomService.listAllPositions(data.link)
+
             sendToAllClients("${data.link}-update-user-list", client, UpdateUsersSocketResponseDto(users))
             log.info("Socket Client: ${client.sessionId} started to join room ${data.link}")
         }

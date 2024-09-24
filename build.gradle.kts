@@ -7,10 +7,11 @@ plugins {
 
 group = "br.com.devaria.Devameet.SDSirius"
 version = "0.0.1-SNAPSHOT"
+java.sourceCompatibility = JavaVersion.VERSION_21
 
 java {
 	toolchain {
-		languageVersion.set(JavaLanguageVersion.of(17))
+		languageVersion.set(JavaLanguageVersion.of(21))
 	}
 }
 
@@ -36,12 +37,18 @@ dependencies {
 }
 
 kotlin {
-	compilerOptions {
-		freeCompilerArgs.addAll("-Xjsr305=strict")
+	jvmToolchain {
+		languageVersion.set(JavaLanguageVersion.of(21))
+	}
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+	kotlinOptions {
+		freeCompilerArgs = listOf("-Xjsr305=strict")
+		jvmTarget = "21"
 	}
 }
 
 tasks.withType<Test> {
 	useJUnitPlatform()
 }
-

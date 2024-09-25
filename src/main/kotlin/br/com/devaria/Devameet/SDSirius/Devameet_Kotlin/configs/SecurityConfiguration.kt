@@ -36,7 +36,6 @@ class SecurityConfiguration {
 
     @Bean
     fun configureHttpSecurity(http: HttpSecurity, authenticationManager: AuthenticationManager): SecurityFilterChain {
-        println("configureHttpSecurity INICIADO  ->> OK ")
         http.csrf{ it.disable() }.authorizeHttpRequests {
             authz: AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry ->
             authz.requestMatchers(HttpMethod.POST, "/auth/*").permitAll().anyRequest().authenticated()
@@ -49,14 +48,12 @@ class SecurityConfiguration {
     @Bean
     fun configureCors(): CorsConfigurationSource? {
         val configuration = CorsConfiguration()
-        println("Chegou no configurecors!! ")
         configuration.addAllowedOriginPattern("*")
         configuration.addAllowedMethod("*")
         configuration.addAllowedHeader("*")
 
         val source = UrlBasedCorsConfigurationSource()
         source.registerCorsConfiguration("/**", configuration)
-        println("Finalizou o configureCors")
         return source
     }
 }

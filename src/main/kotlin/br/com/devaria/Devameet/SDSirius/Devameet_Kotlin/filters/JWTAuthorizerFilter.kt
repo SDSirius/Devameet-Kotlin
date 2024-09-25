@@ -24,9 +24,7 @@ class JWTAuthorizerFilter(
         request: HttpServletRequest,
         response: HttpServletResponse,
         chain: FilterChain) {
-        println(" doFilterInternal  ->> ")
         val authorizationHeader = request.getHeader(authorization)
-        println("authorizationHeader   -->>  " + authorizationHeader)
         if(authorizationHeader != null && authorizationHeader.startsWith(bearer)){
             val autorizado = getAuthentication(authorizationHeader)
             SecurityContextHolder.getContext().authentication = autorizado
@@ -36,7 +34,6 @@ class JWTAuthorizerFilter(
     }
 
     private fun getAuthentication(authorizationHeader: String): UsernamePasswordAuthenticationToken {
-        println("Inicio getAuthentication  ->> " )
         val token = authorizationHeader.substring(7)
         if (jwtUtils.isTokenValid(token)){
             val idString = jwtUtils.getUserId(token)

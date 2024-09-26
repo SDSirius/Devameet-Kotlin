@@ -72,6 +72,7 @@ class UserService(
             avatar = dto.avatar
         )
 
+
         userRepository.save(user)
         log.info("Create User - Success!")
     }

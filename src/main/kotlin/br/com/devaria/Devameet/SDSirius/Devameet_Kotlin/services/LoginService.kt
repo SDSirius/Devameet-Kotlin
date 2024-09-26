@@ -15,7 +15,7 @@ import kotlin.jvm.Throws
 @Service
 class LoginService(
 
-    @Value("\${devameet.secrets.aes-secret")
+    @Value("\${devameet.secrets.aes-secret}")
     private val secret : String,
     private val userRepository: UserRepository
 ){
@@ -41,17 +41,13 @@ class LoginService(
             messages.add("Usuário e senha não encontrados.")
             throw BadRequestException(messages)
         }
-
         val passwordDecripted = decrypt(existingUser.password, secret)
-
         if (passwordDecripted != dto.password){
             messages.add("Usuário e senha não encontrados.")
             throw BadRequestException(messages)
         }
         val token =jwtUtils.generateToken((existingUser.id.toString()))
-
         val response = LoginResponseDto(existingUser.name, existingUser.email, token )
-
         log.info("Login - finished Succes!")
         return response
     }

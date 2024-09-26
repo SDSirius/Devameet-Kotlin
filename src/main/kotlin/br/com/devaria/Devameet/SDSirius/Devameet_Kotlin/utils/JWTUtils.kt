@@ -9,36 +9,32 @@ import org.springframework.stereotype.Component
 @Component
 class JWTUtils(
     @Value("\${devameet.secrets.jwt-secret}")
-    val secretKeyJwt : String
-){
-    fun generateToken(userId:String): String{
-        return Jwts.builder().setSubject(userId)
-            .signWith(SignatureAlgorithm.HS512, secretKeyJwt.toByteArray())
+    private val secretKeyJwt: String
+) {
+
+    fun generateToken(userId: String): String {
+        return Jwts.
+        builder().
+        setSubject(userId).
+        signWith(SignatureAlgorithm.HS512, secretKeyJwt.toByteArray())
             .compact()
     }
 
     private fun getClaimsToken(token: String) = try {
-        Jwts
-            .parser()
-            .setSigningKey(secretKeyJwt.toByteArray())
-            .parseClaimsJws(token)
-            .body
-    } catch (exception: Exception) {
+        Jwts.parser().setSigningKey(secretKeyJwt.toByteArray()).parseClaimsJws(token).body
+    }catch (ex:Exception){
         null
     }
 
-    fun getUserId(token:String)  :String? {
+    fun getUserId(token: String): String?{
         val claims = getClaimsToken(token)
         return claims?.subject
     }
 
-    fun isTokenValid(token:String):Boolean {
-        val claims = getClaimsToken(token)
-        if (claims != null) {
-            val userId = claims.subject
-            if (!userId.isNullOrEmpty() && !userId.isBlank()) {
-                return true
-            }
+    fun isTokenValid(token: String) : Boolean {
+        val userId = getUserId(token)
+        if(!userId.isNullOrEmpty() && userId.isNotBlank()){
+            return true
         }
         return false
     }

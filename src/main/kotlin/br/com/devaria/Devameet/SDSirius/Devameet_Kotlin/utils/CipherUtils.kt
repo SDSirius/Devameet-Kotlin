@@ -4,24 +4,36 @@ import java.util.Base64
 import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
+import kotlin.random.Random
 
 private val algorithm = "AES/CBC/PKCS5Padding"
-private val iv= IvParameterSpec(ByteArray(16))
 
-fun encrypt(inputText : String, secretKey: String) : String {
-    val key = SecretKeySpec(secretKey.toByteArray(),"AES")
-    val cipher = Cipher.getInstance(algorithm)
-    cipher.init(Cipher.ENCRYPT_MODE, key, iv)
-    val cipherText = cipher.doFinal(inputText.toByteArray())
-
-    return Base64.getEncoder().encodeToString(cipherText)
+fun generateRandomIV(): ByteArray {
+    val iv = ByteArray(16)
+    Random.nextBytes(iv)
+    return iv
 }
 
-fun decrypt(cipherText : String, secretKey: String) :String{
-    val key = SecretKeySpec(secretKey.toByteArray(),"AES")
+fun encrypt(inputText: String, secretKey: String): String {
+    val key = SecretKeySpec(secretKey.toByteArray().copyOf(16), "AES")
     val cipher = Cipher.getInstance(algorithm)
-    cipher.init(Cipher.DECRYPT_MODE, key, iv)
-    val plainText = cipher.doFinal(Base64.getDecoder().decode(cipherText))
+    val iv = generateRandomIV()
+    val ivSpec = IvParameterSpec(iv)
+    cipher.init(Cipher.ENCRYPT_MODE, key, ivSpec)
+    val cipherText = cipher.doFinal(inputText.toByteArray())
+
+    return Base64.getEncoder().encodeToString(iv) + ":" + Base64.getEncoder().encodeToString(cipherText)
+}
+
+fun decrypt(cipherText: String, secretKey: String): String {
+    val key = SecretKeySpec(secretKey.toByteArray().copyOf(16), "AES")
+    val cipher = Cipher.getInstance(algorithm)
+    val parts = cipherText.split(":")
+    val iv = Base64.getDecoder().decode(parts[0])
+    val cipherTextBytes = Base64.getDecoder().decode(parts[1])
+    val ivSpec = IvParameterSpec(iv)
+    cipher.init(Cipher.DECRYPT_MODE, key, ivSpec)
+    val plainText = cipher.doFinal(cipherTextBytes)
 
     return String(plainText)
 }

@@ -108,11 +108,11 @@ class RoomService(
                 orientation = "down",
             )
         }else{
-            if (dto.x in 1..7){
+            if (dto.x in 1..8){
                 loggedUserInRoom.x = dto.x
             }
 
-            if (dto.y in 1..7){
+            if (dto.y in 1..8){
                 loggedUserInRoom.y = dto.y
             }
 

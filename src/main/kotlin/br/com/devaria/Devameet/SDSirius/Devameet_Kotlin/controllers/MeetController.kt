@@ -33,6 +33,24 @@ class MeetController(private val meetService: MeetService):BaseController(MeetCo
         }
     }
 
+    @GetMapping("/{id}")
+    fun getMeetById(
+        @RequestHeader("Authorization") authorization: String,
+        @PathVariable id: Long
+    ): ResponseEntity<Any> {
+        return try {
+            val user = readToken(authorization)
+            val meet = meetService.getMeetById(user, id) // Crie esse método no seu serviço
+            if (meet != null) {
+                ResponseEntity(meet, HttpStatus.OK)
+            } else {
+                ResponseEntity(HttpStatus.NOT_FOUND)
+            }
+        } catch (e: Exception) {
+            return formatErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, mutableListOf("Ocorreu um erro ao obter a reunião do usuário").toTypedArray())
+        }
+    }
+
     @GetMapping("/objects/{id}")
     fun getMeetObjects(
         @RequestHeader("Authorization") authorization:String,

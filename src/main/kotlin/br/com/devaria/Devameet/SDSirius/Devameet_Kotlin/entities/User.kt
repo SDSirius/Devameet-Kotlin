@@ -25,4 +25,8 @@ data class User(
     @JsonBackReference
     @OneToMany(mappedBy = "userPosition")
     val positions : List<Position> = emptyList()
-)
+){
+    override fun toString(): String {
+        return "User(id=$id, name=$name, email=$email)"
+    }
+}

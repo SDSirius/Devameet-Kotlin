@@ -28,7 +28,6 @@ class LoginService(
     fun login (dto : LoginRequestDto): LoginResponseDto{
         val messages = mutableListOf<String>()
         log.info("Login - start")
-
         if(dto.login.isNullOrBlank() || dto.login.isEmpty() ||
             dto.password.isNullOrBlank() || dto.password.isEmpty()){
             messages.add("Favor preencher os campos.")
@@ -36,7 +35,6 @@ class LoginService(
         }
 
         val existingUser = userRepository.findByEmail(dto.login)
-
         if (existingUser==null){
             messages.add("Usuário e senha não encontrados.")
             throw BadRequestException(messages)

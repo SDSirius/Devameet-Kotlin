@@ -2,24 +2,25 @@ package br.com.devaria.Devameet.SDSirius.Devameet_Kotlin.services
 
 import br.com.devaria.Devameet.SDSirius.Devameet_Kotlin.dtos.meet.MeetObjectRequestDto
 import br.com.devaria.Devameet.SDSirius.Devameet_Kotlin.dtos.room.GetRoomResponseDto
+import br.com.devaria.Devameet.SDSirius.Devameet_Kotlin.dtos.room.LastPositionDto
 import br.com.devaria.Devameet.SDSirius.Devameet_Kotlin.dtos.room.UpdatePositionRequestDto
 import br.com.devaria.Devameet.SDSirius.Devameet_Kotlin.dtos.room.UpdateUserSocketResponseDto
-import br.com.devaria.Devameet.SDSirius.Devameet_Kotlin.entities.Position
+import br.com.devaria.Devameet.SDSirius.Devameet_Kotlin.entities.*
 import br.com.devaria.Devameet.SDSirius.Devameet_Kotlin.exceptions.BadRequestException
-import br.com.devaria.Devameet.SDSirius.Devameet_Kotlin.repositories.MeetObjectRepository
-import br.com.devaria.Devameet.SDSirius.Devameet_Kotlin.repositories.MeetRepository
-import br.com.devaria.Devameet.SDSirius.Devameet_Kotlin.repositories.PositionsRepository
-import br.com.devaria.Devameet.SDSirius.Devameet_Kotlin.repositories.UserRepository
+import br.com.devaria.Devameet.SDSirius.Devameet_Kotlin.repositories.*
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import kotlin.jvm.Throws
+import kotlin.random.Random
+
 
 @Service
 class RoomService(
     private val meetRepository: MeetRepository,
     private val meetObjectRepository: MeetObjectRepository,
     private val positionsRepository: PositionsRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val lastPositionsRepository: LastPositionsRepository
 ) {
     private val log = LoggerFactory.getLogger(RoomService::class.java)
 
@@ -97,22 +98,33 @@ class RoomService(
             if(usersInRoom != null && usersInRoom.size > 20){
                 throw BadRequestException(mutableListOf("Reunião excedeu a quantidade de participantes"))
             }
+
+            var newX: Int
+            var newY: Int
+            var positionOccupied: Boolean
+
+            do {
+                newX = Random.nextInt(1, 9)
+                newY = Random.nextInt(1, 9)
+                positionOccupied = usersInRoom.any { it.x == newX && it.y == newY }
+            } while (positionOccupied)
+
             loggedUserInRoom = Position(
                 clientId = dto.clientId,
                 userPosition = user,
                 meetPosition = meet,
                 avatar = user.avatar,
                 name = user.name,
-                x = 2,
-                y = 2,
+                x = newX,
+                y = newY,
                 orientation = "down",
             )
         }else{
-            if (dto.x in 1..8){
+            if(dto.x > 0 && dto.x < 8){
                 loggedUserInRoom.x = dto.x
             }
 
-            if (dto.y in 1..8){
+            if(dto.y > 0 && dto.y < 8){
                 loggedUserInRoom.y = dto.y
             }
 
@@ -122,6 +134,40 @@ class RoomService(
         }
         positionsRepository.save(loggedUserInRoom)
         return loggedUserInRoom
+    }
+
+    fun getLasPositionByMeetIdAndLink(userId: Long, link: String) : LastPositionDto?{
+        val dto = lastPositionsRepository.findByIdUserIdAndIdLink(userId = userId, link = link)
+        if (dto != null){
+            val result  = LastPositionDto(
+                userId = userId,
+                link = link,
+                x = dto.x,
+                y = dto.y,
+                orientation = dto.orientation,
+                muted = dto.muted,
+            )
+            return result
+        }
+        return null
+    }
+
+    fun saveLasPosition(dto: LastPositionDto) {
+        log.info("savingLastPositions - start")
+        val lastPositionKey = LastPositionKey(
+            userId = dto.userId,
+            link = dto.link
+        )
+        val lastPosition = LastPosition(
+            id = lastPositionKey,
+            x = dto.x,
+            y = dto.y,
+            orientation = dto.orientation,
+            muted = dto.muted
+        )
+
+        lastPositionsRepository.save(lastPosition)
+        log.info("savingLastPositions - finished")
     }
 
     fun findByClientId(clientId: String): Position? {

@@ -15,7 +15,7 @@ import kotlin.jvm.Throws
 
 @Service
 class UserService(
-    @Value("\${devameet.secrets.jwt-secret}")
+    @Value("\${devameet.secrets.aes-secret}")
     private val secret: String,
     private val userRepository: UserRepository
 ) {
@@ -71,7 +71,6 @@ class UserService(
             password = encrypt(dto.password, secret),
             avatar = dto.avatar
         )
-
 
         userRepository.save(user)
         log.info("Create User - Success!")

@@ -21,7 +21,7 @@ class LoginController(private val loginService:LoginService) : BaseController(Lo
         }catch (bre: BadRequestException){
             return formatErrorResponse(bre.status, bre.messages.toTypedArray())
         }catch (e: Exception){
-            return formatErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, mutableListOf("Ocorreu um erro ao efectuar o login").toTypedArray())
+            return formatErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, mutableListOf("Ocorreu um erro ao efetuar o login").toTypedArray())
         }
     }
 }

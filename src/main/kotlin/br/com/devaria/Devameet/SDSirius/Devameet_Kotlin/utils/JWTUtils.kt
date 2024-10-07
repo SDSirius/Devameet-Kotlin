@@ -5,7 +5,6 @@ import io.jsonwebtoken.SignatureAlgorithm
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 
-
 @Component
 class JWTUtils(
     @Value("\${devameet.secrets.jwt-secret}")
@@ -23,6 +22,7 @@ class JWTUtils(
     private fun getClaimsToken(token: String) = try {
         Jwts.parser().setSigningKey(secretKeyJwt.toByteArray()).parseClaimsJws(token).body
     }catch (ex:Exception){
+        println(ex)
         null
     }
 
@@ -33,7 +33,7 @@ class JWTUtils(
 
     fun isTokenValid(token: String) : Boolean {
         val userId = getUserId(token)
-        if(!userId.isNullOrEmpty() && userId.isNotBlank()){
+        if(!userId.isNullOrEmpty() && !userId.isNullOrBlank()){
             return true
         }
         return false

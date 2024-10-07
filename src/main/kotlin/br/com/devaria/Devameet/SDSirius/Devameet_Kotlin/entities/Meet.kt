@@ -26,4 +26,8 @@ data class Meet(
     @JsonBackReference
     @OneToMany(mappedBy = "meetPosition")
     val positions : List<Position> = emptyList()
-)
+) {
+    override fun toString(): String {
+        return "Meet(id=$id, name=$name, link=$link, color=$color)"
+    }
+}
